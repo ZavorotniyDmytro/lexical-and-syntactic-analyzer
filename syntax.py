@@ -157,6 +157,7 @@ def get_rule(current_expression_part: str, last_stack_rule: str) -> list:
     return answer
 
 
+# TODO замінити на аналогічну функцію з lexis.py, яка працює краще
 def divide_into_parts(expression: str) -> list:
     # input 'id+id*id$'
     # output [ 'id', '+', 'id', '*', 'id', '$' ]
@@ -255,5 +256,4 @@ def predictive_analyzer(expression: str) -> None:
 
 
 if __name__ == '__main__':
-    predictive_analyzer("<h1 align='center'>Чудовий тег H1</h1>$")
-    predictive_analyzer('<img src="image.svg" height="380" width="1200">')
+    predictive_analyzer("<h1 align='center'><img src='image.svg' height='380' width='1200'></h1>$")

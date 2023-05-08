@@ -6,41 +6,7 @@ HTML_FILE_PATH = 'index.html'
 TAG_REGEX = r"<\s*([a-zA-Z0-9]+)([^>]*)>"
 END_TAG_REGEX = r"</\s*([a-zA-Z0-9]+)\s*>"
 ATTRIBUTE_REGEX = r"([a-zA-Z0-9_-]+)\s*=\s*['\"](.*?)['\"]"
-TEXT_REGEX = r"[^<]+"
-
-
-def tokenize_html(html):
-    tokens = []
-    while html:
-        # Шукаємо початковий тег
-        match = re.match(TAG_REGEX, html)
-        if match:
-            tag_name = match.group(1)
-            attributes_str = match.group(2)
-            attributes = []
-            # Шукаємо атрибути
-            for attr_match in re.finditer(ATTRIBUTE_REGEX, attributes_str):
-                attr_name = attr_match.group(1)
-                attr_value = attr_match.group(2)
-                attributes.append((attr_name, attr_value))
-            tokens.append(('TAG_START', tag_name, attributes))
-            html = html[match.end():]
-        # Шукаємо закриваючий тег
-        match = re.match(END_TAG_REGEX, html)
-        if match:
-            tag_name = match.group(1)
-            tokens.append(('TAG_END', tag_name))
-            html = html[match.end():]
-        # Шукаємо текстовий контент
-        match = re.match(TEXT_REGEX, html)
-        if match:
-            text = match.group(0)
-            tokens.append(('TEXT', text))
-            html = html[match.end():]
-        # Якщо не знайшли жодного токена, кидаємо виключення
-        if not match:
-            raise ValueError('Invalid HTML')
-    return tokens
+TEXT_REGEX = r">([^><]+)<"
 
 
 def show_current_element(type_token='Тип токену', lexeme='Лексема', start='Початок', length='Довжина'):
@@ -54,12 +20,14 @@ def html_parse(file_path):
     show_current_element()
     print(f'{"-" * 57}')
     f = open(file_path, 'r', encoding='utf-8')
-    d = dict()
     length = 0
     for line in f:
         if line != '\n':
             match_tags = re.findall(r'<[^<>]+>', line)
-            # match_content = re.findall(r'>[^<>]+<', line)
+            match_content = re.findall(TEXT_REGEX, line)
+            match_attributes = re.findall(ATTRIBUTE_REGEX, line)  # only content r'\s*=\s*["\']?([^"\'>\s]+)'
+            print(match_attributes)
+            print(match_content)
             for item in match_tags:
                 # print(match_tags)
                 # print(item)
@@ -88,8 +56,4 @@ def html_parse(file_path):
 
 
 if __name__ == '__main__':
-    html2 = '<html><head><title>Інформація про мене</title></head><body><h1>Чудовий тег h1</h1><h2>Заворотній Дмитро Олександрович, 202 група</h2><table><caption>Результати моїх тестів</caption><thead><tr><th>Тест</th><th>Результат</th><th>Посилання на тест</th></tr></thead><tr><th>Моя майбутня професія</th><th>Людина-природа</th><th>https://onlinetestpad.com/ru/testview/12319-vasha-budushhaya-professiya</th></tr><tr><th>Тест на уважність</th><th>33%</th><th>https://onlinetestpad.com/ru/testview/53800-test-na-vnimatelnost</th></tr></table><img height="380" src="img.jpg" width="1200"/><p>А й правда, крилатим ґрунту не треба<br/>Землі немає, то буде небо.<br/>Немає поля, то буде воля.<br/>Немає пари, то будуть хмари.</p></body></html>'
-
-    tokens = tokenize_html(html2)
-    print(tokens)
-    # html_parse(HTML_FILE_PATH)
+    html_parse(HTML_FILE_PATH)
