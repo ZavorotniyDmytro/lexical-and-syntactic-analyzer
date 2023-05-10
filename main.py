@@ -1,5 +1,10 @@
-from lexis import show_current_element, html_parse
-from syntax import table_view, divide_into_parts, predictive_analyzer
+from lexis import *
+from syntax import *
+
+HTML_FILE_PATH = 'index.html'
 
 if __name__ == '__main__':
-    pass
+    html_string = file_content_to_html(HTML_FILE_PATH)
+    expression = html_parse(html_string)
+    print(expression)
+    predictive_analyzer(expression)

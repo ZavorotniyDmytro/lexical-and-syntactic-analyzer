@@ -1,8 +1,11 @@
 import re
 
-KEY_WORDS = ('</', '<', '>', 'img', 'meta', 'hr', 'html', 'title', 'head', 'body', 'table', 'thead', 'tr', 'td', 'h1',
-             'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'lang', 'charset', 'style', 'bgcolor', 'align', 'bordercolor', 'border',
-             'width', "'", '`', '"', '=', '$')  # IF NOT EXISTS WE USE RegEx to find "[A-Za-z0-9- ]+" OR "[^<>''""]+"
+KEY_WORDS = ('</', '<', '>',
+             'img', 'meta', 'hr',
+             'html', 'title', 'head', 'body', 'table', 'thead', 'tr', 'td', 'th',
+             'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p',
+             'lang', 'charset', 'style', 'bgcolor', 'align', 'bordercolor', 'border', 'width',
+             "'", '`', '"', '=', '$')  # IF NOT EXISTS WE USE RegEx to find "[A-Za-z0-9- ]+" OR "[^<>''""]+"
 phase_counter = 0
 
 
@@ -159,9 +162,6 @@ def get_rule(current_expression_part: str, last_stack_rule: str) -> list:
 
 # TODO замінити на аналогічну функцію з lexis.py, яка працює краще
 def divide_into_parts(expression: str) -> list:
-    # input 'id+id*id$'
-    # output [ 'id', '+', 'id', '*', 'id', '$' ]
-    # перевіряємо символ $ в кінці
     expression += '$' if expression[-1] != '$' else ''
     divided_expression = []
 
@@ -205,40 +205,25 @@ def table_view(stack=None, input=None, output='') -> None:
     phase_counter += 1
 
 
-def predictive_analyzer(expression: str) -> None:
+def predictive_analyzer(expression: list) -> None:
     global phase_counter
-    table_view()  # table init
-
-    # todo має прилітати в функцію і вже потім оброблюватись
-    expression = divide_into_parts(expression)  # поділ на частини
-
-    # print(expression)
-    stack = ["$", "<вхідний тег>"]  # початковий стек. Чи має тут бути "<вхідний тег>"
+    table_view()
+    stack = ["$", "<вхідний тег>"]
 
     table_view(stack, expression)
-
-    # для кожного останнього елементу стеку, поки він не є $ або першим елементом expression, який після всіх ітерацій
-    # стане "$"
-    # while stack[-1] != ("$" or expression[0]):
     while expression[0] != "$":
-        # якщо останній елемент стеку та перший елемент виразу однакові - видаляємо і там, і там
-        # example:  stack:  $E'T+        expression:  +id*id$
         if stack[-1] == expression[0]:
-            # видаляємо
             stack = stack[:-1]
             expression = expression[1:]
 
             table_view(stack, expression)
             continue
 
-        # зберігаємо це значення для table
         last_stack_element = stack[-1]
 
-        # дістаємо правило, яким заміняємо останній елементу стеку
         new_rule = get_rule(expression[0], stack[-1])
         stack = stack[:-1]
 
-        # перевіряємо на помилку
         if 'exception' in new_rule:
             print('EXCEPTION NOT RULE')
             print(f'stack[last] = "{last_stack_element}", expression[first] = "{expression[0]}"')
@@ -246,17 +231,10 @@ def predictive_analyzer(expression: str) -> None:
             print(expression)
             break
 
-        # в нашому випадку ε просто видаляє останній елемент стеку і нічого не додає
         if 'ε' not in new_rule:
-            # тобто, якщо НЕ ε, то ми доповнюємо стек, але потрібно зробити реверс
             stack.extend(new_rule[::-1])
 
         table_view(stack, expression, last_stack_element+f"({expression[0]})" + " -> " + "".join(new_rule))
 
-    # перезапускаємо лічильник для інших виразів
     phase_counter = 0
     print()
-
-
-if __name__ == '__main__':
-    predictive_analyzer("<h1 align='center'><img src='image.svg' height='380' width='1200'></h1>$")

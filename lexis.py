@@ -1,7 +1,5 @@
 import re
 
-HTML_FILE_PATH = 'index.html'
-
 # Задаємо регулярні вирази для токенів
 ALL_TAG_REGEX = r"<\s*([a-zA-Z0-9]+)([^>]*)>"
 TAG_REGEX = r'<([/]?\w+)[^>]*>'
@@ -31,7 +29,7 @@ def file_content_to_html(path):
     return clean_html_string(html)
 
 
-def html_parse_v2(html):
+def html_parse(html):
     length = 0
     expression = []
     tags = re.findall(r'<[^<>]+>', html)
@@ -81,7 +79,3 @@ def html_parse_v2(html):
                 html = html[len(text):]
                 content = content[1:]
     return expression
-
-
-if __name__ == '__main__':
-    print(html_parse_v2(file_content_to_html(HTML_FILE_PATH)))
