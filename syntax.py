@@ -209,7 +209,10 @@ def predictive_analyzer(expression: str) -> None:
     global phase_counter
     table_view()  # table init
 
+    # todo має прилітати в функцію і вже потім оброблюватись
     expression = divide_into_parts(expression)  # поділ на частини
+
+    # print(expression)
     stack = ["$", "<вхідний тег>"]  # початковий стек. Чи має тут бути "<вхідний тег>"
 
     table_view(stack, expression)
