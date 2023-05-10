@@ -1,16 +1,14 @@
 import re
 
-# Задаємо регулярні вирази для токенів
-ALL_TAG_REGEX = r"<\s*([a-zA-Z0-9]+)([^>]*)>"
+# регулярні вирази для токенів
 TAG_REGEX = r'<([/]?\w+)[^>]*>'
-END_TAG_REGEX = r"</\s*([a-zA-Z0-9]+)\s*>"
 ATTRIBUTE_REGEX = r"([a-zA-Z0-9_-]+)\s*=\s*['\"](.*?)['\"]"
 TEXT_REGEX = r">([^><]+)<"
 CLEAR_HTML_REGEX = r'[\n\t]'
 SPACE_REGEX = r'\s+'
 
 
-def clean_html_string(html_string):
+def clean_html_string(html_string: str) -> str:
     clean_string = re.sub(CLEAR_HTML_REGEX, '', html_string)
     clean_string = re.sub(SPACE_REGEX, ' ', clean_string)
     return clean_string.strip()
@@ -23,13 +21,13 @@ def show_current_element(type_token='Тип токену', lexeme='Лексем�
           f'{f" {lexeme}":<15}')
 
 
-def file_content_to_html(path):
+def file_to_html(path: str) -> str:
     file = open(path, 'r', encoding='utf-8')
     html = file.read()
     return clean_html_string(html)
 
 
-def html_parse(html):
+def lexis_analyzer(html: str) -> list:
     length = 0
     expression = []
     tags = re.findall(r'<[^<>]+>', html)

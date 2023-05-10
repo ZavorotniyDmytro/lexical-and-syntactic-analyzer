@@ -5,7 +5,7 @@ KEY_WORDS = ('</', '<', '>',
              'html', 'title', 'head', 'body', 'table', 'thead', 'tr', 'td', 'th', 'div', 'br'
              'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'caption', 'center',
              'lang', 'charset', 'style', 'bgcolor', 'align', 'bordercolor', 'border', 'width',
-             "'", '`', '"', '=', '$')  # IF NOT EXISTS WE USE RegEx to find "[A-Za-z0-9- ]+" OR "[^<>''""]+"
+             "'", '`', '"', '=', '$')
 phase_counter = 0
 
 
@@ -165,7 +165,6 @@ def get_rule(current_expression_part: str, last_stack_rule: str) -> list:
         ("<перелік атрибутів>", "$",): ["ε", ],
     }.get(case, ["exception"])
     if "exception" in answer:
-        # match current_expression_part as [A-Za-z0-9- ]+ and [^<>''""]+
         element_pattern = '[^</>''""]+'
         text_pattern = '[#A-Za-z0-9-. ]+'
         element = re.search(element_pattern, current_expression_part)
@@ -184,7 +183,6 @@ def get_rule(current_expression_part: str, last_stack_rule: str) -> list:
 def table_view(stack=None, input=None, output='') -> None:
     global phase_counter
     if phase_counter == 0:
-        # ініціалізація таблички
         print(f'{" Phase":<10}|{" Stack":<100}|{" Input":<100}|{" Output":<30}')
     else:
         stack = "" if stack is None else "".join(stack)
@@ -193,7 +191,7 @@ def table_view(stack=None, input=None, output='') -> None:
     phase_counter += 1
 
 
-def predictive_analyzer(expression: list) -> None:
+def predictive_syntax_analyzer(expression: list) -> None:
     global phase_counter
     table_view()
     stack = ["$", "<вхідний тег>"]
@@ -224,6 +222,4 @@ def predictive_analyzer(expression: list) -> None:
             stack.extend(new_rule[::-1])
 
         table_view(stack, expression, last_stack_element+f"({expression[0]})" + " -> " + "".join(new_rule))
-    
     phase_counter = 0
-    print()
